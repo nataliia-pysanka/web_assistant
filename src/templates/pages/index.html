@@ -1,15 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="modal__background">
-    <div class="modal__button__window">
-        <button class="modal__button">
-            <p>MY CONTACTS</p>
-        </button>
-
-        <button class="modal__button">
-            <p>MY NOTES</p>
-        </button>
+    <div class="modal__background">
+    <form method="post" action="/">
+        <input class="modal__button" type="submit" value="MY CONTACTS" name="contacts_input"/>
+        <input class="modal__button" type="submit" value="MY NOTES" name="notes_input" />
+    </form>
     </div>
-</div>
+
 {% endblock %}
