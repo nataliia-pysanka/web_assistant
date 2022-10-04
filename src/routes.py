@@ -1,5 +1,6 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from src import app
+from src.repository import users
 
 
 @app.route('/healthcheck')
@@ -9,23 +10,33 @@ def healthcheck():
 
 @app.route('/', methods=['GET', 'POST'], strict_slashes=False)
 def index():
-    auth = True
     if request.method == 'POST':
         if request.form.get('contacts_input'):
-            return render_template('pages/contacts.html', auth=auth)
+            return redirect(url_for('contacts'))
         elif request.form.get('notes_input'):
-            return render_template('pages/notes.html', auth=auth)
+            return redirect(url_for('notes'))
 
-    return render_template('pages/index.html', auth=auth)
+    return render_template('pages/index.html')
 
 
-@app.route('/login', strict_slashes=False)
+@app.route('/login', methods=['GET', 'POST'], strict_slashes=False)
 def login():
-    return render_template('pages/login.html')
+    if request.method == "POST":
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = users.login(email, password)
+        if user is None:
+            return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
-@app.route('/signin', strict_slashes=False)
+@app.route('/signin', methods=['GET', 'POST'], strict_slashes=False)
 def signin():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = users.create_user(email, password)
+        return redirect(url_for('index'))
     return render_template('pages/signin.html')
 
 
