@@ -1,6 +1,6 @@
-from src import db
-from src import models
 import bcrypt
+from src import db
+from src.models import User
 
 
 def create_user(email: str, password: str):
@@ -8,7 +8,7 @@ def create_user(email: str, password: str):
         rounds=10))
     hashed = hash_pass.decode('utf-8')
 
-    user = models.User(email=email, hash=hashed)
+    user = User(email=email, hash=hashed)
     db.session.add(user)
     db.session.commit()
     return user
@@ -24,12 +24,17 @@ def login(email: str, password: str):
 
 
 def find_by_email(email: str):
-    user = db.session.query(models.User).filter(models.User.email == email).\
+    user = db.session.query(User).filter(User.email == email).\
         first()
     return user
 
 
 def find_by_id(ids: int):
-    user = db.session.query(models.User).filter(models.User.id == ids).\
+    user = db.session.query(User).filter(User.id == ids).\
         first()
     return user
+
+
+def set_token(user: User, token: str):
+    user.token_cookie = token
+    db.session.commit()

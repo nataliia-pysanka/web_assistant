@@ -1,7 +1,9 @@
 from flask import render_template, request, redirect, url_for, session, \
     make_response
+import uuid
 from src import app
 from src.repository import users
+from datetime import datetime, timedelta
 
 
 @app.route('/healthcheck')
@@ -36,7 +38,10 @@ def login():
         response = make_response(redirect(url_for('index')))
 
         if remember:
-            pass
+            token = str(uuid.uuid4())
+            expire_date = datetime.now() + timedelta(days=10)
+            response.set_cookie('user', token, expires=expire_date)
+            users.set_token(user, token)
 
         return response
     return render_template('pages/login.html')
@@ -59,6 +64,7 @@ def logout():
         return redirect(request.url)
     session.pop('user')
     response = make_response(redirect(url_for('index')))
+    response.set_cookie('user', '', expires=-1)
     return response
 
 
