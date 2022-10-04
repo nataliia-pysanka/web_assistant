@@ -6,6 +6,17 @@ from src.repository import users
 from datetime import datetime, timedelta
 
 
+@app.before_request
+def before_func():
+    auth = True if 'username' in session else False
+    if not auth:
+        token_user = request.cookies.get('user')
+        if token_user:
+            user = users.get_user_by_token(token_user)
+            if user:
+                session['user'] = {'email': user.email, 'id': user.id}
+
+
 @app.route('/healthcheck')
 def healthcheck():
     return 'Hello World!'
@@ -25,6 +36,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'], strict_slashes=False)
 def login():
+    auth = True if 'user' in session else False
     if request.method == "POST":
         email = request.form.get('email')
         password = request.form.get('password')
@@ -34,7 +46,7 @@ def login():
         if user is None:
             return redirect(url_for('login'))
 
-        session['user'] = {'email': user.email, "id": user.id}
+        session['user'] = {'email': user.email, 'id': user.id}
         response = make_response(redirect(url_for('index')))
 
         if remember:
@@ -44,15 +56,20 @@ def login():
             users.set_token(user, token)
 
         return response
+    if auth:
+        return redirect(url_for('index'))
     return render_template('pages/login.html')
 
 
 @app.route('/signin', methods=['GET', 'POST'], strict_slashes=False)
 def signin():
+    auth = True if 'user' in session else False
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
         user = users.create_user(email, password)
+        return redirect(url_for('index'))
+    if auth:
         return redirect(url_for('index'))
     return render_template('pages/signin.html')
 
@@ -62,9 +79,15 @@ def logout():
     auth = True if 'user' in session else False
     if not auth:
         return redirect(request.url)
+
+    user_id = session.get('user', {}).get('id')
+    if user_id:
+        user = users.get_user_by_id(user_id)
+        users.set_token(user, '')
     session.pop('user')
     response = make_response(redirect(url_for('index')))
     response.set_cookie('user', '', expires=-1)
+
     return response
 
 

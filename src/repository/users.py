@@ -15,7 +15,7 @@ def create_user(email: str, password: str):
 
 
 def login(email: str, password: str):
-    user = find_by_email(email)
+    user = get_user_by_email(email)
     if not user:
         return None
     if not bcrypt.checkpw(password.encode('utf-8'), user.hash.encode('utf-8')):
@@ -23,13 +23,13 @@ def login(email: str, password: str):
     return user
 
 
-def find_by_email(email: str):
+def get_user_by_email(email: str):
     user = db.session.query(User).filter(User.email == email).\
         first()
     return user
 
 
-def find_by_id(ids: int):
+def get_user_by_id(ids: int):
     user = db.session.query(User).filter(User.id == ids).\
         first()
     return user
@@ -38,3 +38,10 @@ def find_by_id(ids: int):
 def set_token(user: User, token: str):
     user.token_cookie = token
     db.session.commit()
+
+
+def get_user_by_token(token):
+    user = db.session.query(User).filter(User.token_cookie == token).first()
+    if not user:
+        return None
+    return user
