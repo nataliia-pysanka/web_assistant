@@ -95,7 +95,7 @@ def logout():
 def contacts():
     auth = True if 'user' in session else False
     if not auth:
-        return redirect(request.url)
+        return redirect(url_for('index'))
     return render_template('pages/contacts.html', auth=auth)
 
 
@@ -103,5 +103,5 @@ def contacts():
 def notes():
     auth = True if 'user' in session else False
     if not auth:
-        return redirect(request.url)
+        return redirect(url_for('index'))
     return render_template('pages/notes.html', auth=auth)
