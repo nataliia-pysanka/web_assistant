@@ -16,3 +16,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@' \
                               f'{DB_HOST}/{DB}'
     SECRET_KEY = config['SECRET_KEY']
+    SQLALCHEMY_TRACK_MODIFICATIONS = True

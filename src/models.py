@@ -9,6 +9,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False, unique=True)
     hash = db.Column(db.String(255), nullable=False)
+    token_cookie = db.Column(db.String(255), nullable=True, default=None)
 
     def __repr__(self):
         return f'User({self.username}, {self.email})'
