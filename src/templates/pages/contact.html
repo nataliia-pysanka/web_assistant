@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="modal__background">
+{% if contact %}
+    <div class="container">
+            <b>
+                <h1 class="name">{{ contact.first_name }} {{ contact.last_name }}</h1>
+            </b>
+
+            <div class="contact">
+                {% if contact.emails %}
+                    {% for email in contact.emails %}
+                        <p><span class="header">EMAIL:</span> {{ email }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if contact.phones %}
+                    {% for phone in contact.phones %}
+                        <p><span class="header">PHONE:</span> {{ phone }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if contact.groups %}
+                    {% for group in contact.groups %}
+                        <p><span class="header">GROUP:</span> {{ group }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if contact.birth %}
+                    <p><span class="header">BIRTHDAY:</span> {{ contact.birth }}</p>
+                {% endif %}
+
+                {% if contact.adress %}
+                    <p><span class="header">ADRESS:</span> {{ contact.adress }}</p>
+                {% endif %}
+            </div>
+    </div>
+
+{#    <div class="pagination">#}
+{#    {% if contacts.has_prev %}#}
+{#        <span>#}
+{#            <a class='page-number' href="{{ url_for('contacts', page=contacts.prev_num) }}">#}
+{#                {{ '<<<' }}#}
+{#            </a>#}
+{#        </span>#}
+{#    {% endif %}#}
+{##}
+{#    {% if contacts.pages>1 %}#}
+{#    {% for page in contacts.iter_pages() %}#}
+{#        {% if page %}#}
+{#            {% if contacts.page != page %}#}
+{#                <span>#}
+{#                        <a class='page-number'#}
+{#                            href="{{ url_for('contacts', page=page) }}">#}
+{#                        {{ page }}#}
+{#                        </a>#}
+{#                </span>#}
+{#            {% else %}#}
+{#                <span class='current-page-number'>{{ page }}</span>#}
+{#            {% endif %}#}
+{#        {% else %}#}
+{#            <span class='page-number'>…</span>#}
+{#        {% endif %}#}
+{#    {% endfor %}#}
+{#    {% endif %}#}
+{##}
+{#    {% if contacts.has_next %}#}
+{#        <span>#}
+{#            <a class='page-number'#}
+{#                href="{{ url_for('contacts', page=contacts.next_num) }}">#}
+{#                {{ '>>>' }}#}
+{#            </a>#}
+{#        </span>#}
+{#    {% endif %}#}
+{#    </div>#}
+{% endif %}
+
+{#        <form class="auth-form" name="form-auth" method="post">#}
+
+
+{##}
+{#            <label class="auth-form__label">#}
+{#                <span class="auth-form__placeholder">password</span>#}
+{#                <input class="auth-form__input input-password" type="password" name="password" autocomlete="off" required>#}
+{#                <div class="auth-form__toggler">#}
+{#                    <i class="la la-eye auth-form__icon"></i>#}
+{#                    <input type="checkbox" class="auth-form__checkbox password-toggler">#}
+{#                </div>#}
+{#            </label>#}
+
+
+{#        </form>#}
+
+
+</div>
+{% endblock %}
+
+
+
+

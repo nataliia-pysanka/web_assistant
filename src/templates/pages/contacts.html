@@ -1,9 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="modal__background">
-    <span class="auth-form__placeholder">Contacts</span>
-    <div class="modal__window">
+{% if contacts %}
+    <div class="content">
+        {% for contact in contacts %}
+            <div class="contact">
+                <b>
+                    <a class='name' href="{{ url_for('contact', contact_id=contact.id) }}">
+                        {{ contact.first_name }} {{ contact.last_name }}
+                    </a>
+                </b>
+
+{#                {% if contact.birth %}#}
+{#                    <p>{{ contact.birth }}</p>#}
+{#                {% endif %}#}
+
+                {% if contact.adress %}
+                    <p>{{ contact.adress }}</p>
+                {% endif %}
+
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+    {% if contacts.has_prev %}
+        <span>
+            <a class='page-number' href="{{ url_for('contacts', page=contacts.prev_num) }}">
+                {{ '<<<' }}
+            </a>
+        </span>
+    {% endif %}
+
+    {% if contacts.pages>1 %}
+    {% for page in contacts.iter_pages() %}
+        {% if page %}
+            {% if contacts.page != page %}
+                <span>
+                        <a class='page-number'
+                            href="{{ url_for('contacts', page=page) }}">
+                        {{ page }}
+                        </a>
+                </span>
+            {% else %}
+                <span class='current-page-number'>{{ page }}</span>
+            {% endif %}
+        {% else %}
+            <span class='page-number'>…</span>
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    {% if contacts.has_next %}
+        <span>
+            <a class='page-number'
+                href="{{ url_for('contacts', page=contacts.next_num) }}">
+                {{ '>>>' }}
+            </a>
+        </span>
+    {% endif %}
+    </div>
+{% endif %}
 
 {#        <form class="auth-form" name="form-auth" method="post">#}
 
@@ -21,10 +80,8 @@
 
 {#        </form>#}
 
-    </div>
-</div>
 
-<div class="hint"></div>
+</div>
 {% endblock %}
 
 

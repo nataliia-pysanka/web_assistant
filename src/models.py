@@ -1,75 +1,79 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 from src.db import db
 
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user_table'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False, unique=True)
     hash = db.Column(db.String(255), nullable=False)
     token_cookie = db.Column(db.String(255), nullable=True, default=None)
+    contacts = relationship('Contact', back_populates='user',
+                            cascade="all, delete")
 
     def __repr__(self):
         return f'User({self.username}, {self.email})'
 
 
+contact_group = db.Table('contact_group',
+                         db.Column('contact_id', db.Integer,
+                                   db.ForeignKey('contact_table.id')),
+                         db.Column('group_id', db.Integer,
+                                   db.ForeignKey('group_table.id'))
+                         )
+
+
 class Contact(db.Model):
-    __tablename__ = 'contacts'
+    __tablename__ = 'contact_table'
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'),
+                        nullable=False)
+    user = relationship('User', back_populates='contacts')
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
-    phones = relationship('Phone', back_populates='contact')
-    emails = relationship('Email', back_populates='contact')
+    phones = relationship('Phone', back_populates='contact',
+                          cascade="all, delete")
+    emails = relationship('Email', back_populates='contact',
+                          cascade="all, delete")
     adress = db.Column('address', db.String(100), nullable=True)
     birth = db.Column('birth', db.Date, nullable=True)
-    groups = relationship('ContactGroup', back_populates='contact')
+    groups = relationship('Group', secondary=contact_group, backref='contacts')
 
     def __repr__(self):
         return f"Contact({self.first_name} {self.last_name})"
 
 
 class Phone(db.Model):
-    __tablename__ = 'phones'
+    __tablename__ = 'phone_table'
     id = db.Column(db.Integer, primary_key=True)
-    phone = db.Column('phone', db.String(20), nullable=False)
-    contact_id = db.Column(db.Integer, ForeignKey('contacts.id'),
+    phone = db.Column('phone', db.String(50), nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact_table.id'),
                            nullable=False)
-    contact = relationship('Contact', cascade='all, delete',
-                           back_populates='phones')
+    contact = relationship('Contact', back_populates='phones')
 
     def __repr__(self):
-        return f"Phone({self.phone})"
+        return f"{self.phone}"
 
 
 class Email(db.Model):
-    __tablename__ = 'emails'
+    __tablename__ = 'email_table'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column('email', db.String(50), nullable=False)
-    contact_id = db.Column('contact_id', ForeignKey('contacts.id'),
-                        nullable=False)
-    contact = relationship('Contact', cascade='all, delete',
-                           back_populates='emails')
+    contact_id = db.Column('contact_id', db.ForeignKey('contact_table.id'),
+                           nullable=False)
+    contact = relationship('Contact', back_populates='emails')
 
     def __repr__(self):
-        return f"Email({self.email})"
+        return f"{self.email}"
 
 
 class Group(db.Model):
-    __tablename__ = 'groups'
+    __tablename__ = 'group_table'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    contacts = relationship('ContactGroup', back_populates='group')
 
     def __repr__(self):
-        return f"Group({self.name})"
+        return f"{self.name}"
 
 
-class ContactGroup(db.Model):
-    __tablename__ = 'contacts_to_groups'
-    id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(ForeignKey('groups.id', primary_key=True))
-    contact_id = db.Column(ForeignKey('contacts.id', primary_key=True))
-    group = relationship("Group", back_populates="contacts")
-    contact = relationship("Contact", back_populates="groups")

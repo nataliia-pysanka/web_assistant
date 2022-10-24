@@ -2,12 +2,14 @@ from flask import render_template, request, redirect, url_for, session, \
     make_response
 from flask import Flask
 from flask_migrate import Migrate
+from flask_seeder import FlaskSeeder
+
 from config import config
 import uuid
 
 from src import models
 from src.db import db
-from src.repository import users
+from src.repository import users_repr, contacts_repr
 from datetime import datetime, timedelta
 
 
@@ -17,6 +19,9 @@ app.config.from_object(config.Config)
 db.init_app(app)
 migrate = Migrate(app, db)
 
+seeder = FlaskSeeder()
+seeder.init_app(app, db)
+
 
 @app.before_request
 def before_func():
@@ -24,7 +29,7 @@ def before_func():
     if not auth:
         token_user = request.cookies.get('user')
         if token_user:
-            user = users.get_user_by_token(token_user)
+            user = users_repr.get_user_by_token(token_user)
             if user:
                 session['user'] = {'email': user.email, 'id': user.id}
 
@@ -54,7 +59,7 @@ def login():
         password = request.form.get('password')
         remember = request.form.get('remember')
 
-        user = users.login(email, password)
+        user = users_repr.login(email, password)
         if user is None:
             return redirect(url_for('login'))
 
@@ -65,7 +70,7 @@ def login():
             token = str(uuid.uuid4())
             expire_date = datetime.now() + timedelta(days=10)
             response.set_cookie('user', token, expires=expire_date)
-            users.set_token(user, token)
+            users_repr.set_token(user, token)
 
         return response
     if auth:
@@ -79,7 +84,7 @@ def signin():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        user = users.create_user(email, password)
+        user = users_repr.create_user(email, password)
         return redirect(url_for('index'))
     if auth:
         return redirect(url_for('index'))
@@ -94,8 +99,8 @@ def logout():
 
     user_id = session.get('user', {}).get('id')
     if user_id:
-        user = users.get_user_by_id(user_id)
-        users.set_token(user, '')
+        user = users_repr.get_user_by_id(user_id)
+        users_repr.set_token(user, '')
     session.pop('user')
     response = make_response(redirect(url_for('index')))
     response.set_cookie('user', '', expires=-1)
@@ -108,7 +113,30 @@ def contacts():
     auth = True if 'user' in session else False
     if not auth:
         return redirect(url_for('index'))
-    return render_template('pages/contacts.html', auth=auth)
+
+    user_id = session.get('user', {}).get('id')
+    page = request.args.get('page', 1, type=int)
+
+    contacts_list = contacts_repr.get_contacts(user_id=user_id, page=page)
+
+    return render_template('pages/contacts.html',
+                           auth=auth,
+                           contacts=contacts_list)
+
+
+@app.route('/contact/<int:contact_id>', strict_slashes=False)
+def contact(contact_id):
+    auth = True if 'user' in session else False
+    if not auth:
+        return redirect(url_for('index'))
+
+    contact_info = contacts_repr.get_contact_by_id(contact_id=contact_id)
+    for gr in contact_info.groups:
+        print(gr)
+    print(contact_info.emails)
+    print(contact_info.phones)
+    return render_template('pages/contact.html',
+                           auth=auth, contact=contact_info)
 
 
 @app.route('/notes', strict_slashes=False)
@@ -117,4 +145,3 @@ def notes():
     if not auth:
         return redirect(url_for('index'))
     return render_template('pages/notes.html', auth=auth)
-

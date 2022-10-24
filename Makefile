@@ -9,11 +9,14 @@ ps:
 	sudo docker-compose ps
 db:
 	sudo docker-compose --env-file ./.env exec db psql -U postgres -c "CREATE DATABASE ${POSTGRES_DB};"
+drop:
+	sudo docker-compose --env-file ./.env exec db psql -U postgres -c "DROP DATABASE ${POSTGRES_DB};"
 stop:
 	sudo docker-compose down
 clear:
 #	sudo docker rm -f $(docker ps -a -q)
 	#sudo docker volume rm $(docker volume ls -q)
 	sudo docker system prune -a
+
 drop:
 	sudo docker-compose --env-file ./.env exec db psql -U postgres -c "DROP DATABASE ${POSTGRES_DB};"
