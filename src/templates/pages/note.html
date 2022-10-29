@@ -3,37 +3,24 @@
 {% block content %}
 
 <div class="modal__background">
-{% if contact %}
-    <div class="container">
+{% if note %}
+    <div class="note-container">
             <b>
-                <h1 class="name">{{ contact }}</h1>
+                <h1 class="name">{{ note }}</h1>
             </b>
 
-            <div class="contact">
-                {% if contact.emails %}
-                    {% for email in contact.emails %}
-                        <p><span class="header">EMAIL:</span> {{ email }}</p>
+            <div class="note">
+                {% if note.text %}
+                    <p> {{ note.text }}</p>
+                {% endif %}
+
+                {% if note.tags %}
+                    <span class='header'>TAG:</span>
+                    {% for tag in note.tags %}
+                        <a class='tag' href="{{ url_for('note_search', tag=tag.name) }}">
+                            {{ tag }}
+                        </a>
                     {% endfor %}
-                {% endif %}
-
-                {% if contact.phones %}
-                    {% for phone in contact.phones %}
-                        <p><span class="header">PHONE:</span> {{ phone }}</p>
-                    {% endfor %}
-                {% endif %}
-
-                {% if contact.groups %}
-                    {% for group in contact.groups %}
-                        <p><span class="header">GROUP:</span> {{ group }}</p>
-                    {% endfor %}
-                {% endif %}
-
-                {% if contact.birth %}
-                    <p><span class="header">BIRTHDAY:</span> {{ contact.birth }}</p>
-                {% endif %}
-
-                {% if contact.adress %}
-                    <p><span class="header">ADRESS:</span> {{ contact.adress }}</p>
                 {% endif %}
             </div>
     </div>
