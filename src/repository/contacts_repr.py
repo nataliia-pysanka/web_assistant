@@ -1,7 +1,6 @@
 from sqlalchemy.orm import joinedload
 from src import db
 from src.models import Contact, Phone, Email, Group
-    # , Association, User
 from typing import List
 
 
