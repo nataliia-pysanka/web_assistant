@@ -196,6 +196,7 @@ body {
 .auth-form__bottom a:hover {
   color: #ddd;
 }
+
 .hint {
   font-size: 12px;
   position: absolute;
@@ -203,3 +204,67 @@ body {
   left: 10px;
 }
 
+.content {
+  position:relative;
+  margin: 5px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+}
+
+.contact {
+  flex: 20%;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px;
+  background-color: #f3f3f3;
+  /*inline-size: 100%;*/
+  color: #232323;
+}
+
+.header {
+  color: #999999;
+}
+
+.container {
+  position: absolute;
+  margin-top: -10%;
+  width: 33%;
+  height: 33%;
+}
+
+.name {
+  color: #00a36f;
+  text-decoration: none;
+}
+
+a:hover {
+  color: crimson;
+}
+
+
+.pagination {
+  position: absolute;
+  bottom: 10px;
+}
+
+.pagination span {
+  font-size: 1em;
+  margin-right: 10px;
+}
+
+.page-number {
+  color: #666;
+  padding: 5px;
+  text-decoration: none;
+}
+
+.current-page-number {
+  color: #00a36f
+}
+
+/*.navbar {*/
+/*  position: relative;*/
+/*}*/
