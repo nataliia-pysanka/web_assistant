@@ -92,9 +92,22 @@ class Group(db.Model):
         return f"{self.name}"
 
 
+note_tag = db.Table('note_tag',
+                    db.Column('note_id', db.Integer,
+                              db.ForeignKey('note_table.id')),
+                    db.Column('tag_id', db.Integer,
+                              db.ForeignKey('tag_table.id'))
+                    )
+
+
 class Note(db.Model):
     __tablename__ = 'note_table'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     text = db.Column(db.String(1200), nullable=False)
 
+
+class Tag(db.Model):
+    __tablename__ = 'tag_table'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False)
