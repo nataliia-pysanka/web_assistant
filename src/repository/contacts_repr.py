@@ -15,10 +15,7 @@ def get_contacts(user_id: int,
 
 def get_contact_by_id(contact_id: int) -> Contact:
     """Return contact by id with loading joined information"""
-    contact = db.session.query(Contact).filter(Contact.id == contact_id). \
-        options(joinedload('phones'),
-                joinedload('groups'),
-                joinedload('emails')).one()
+    contact = db.session.query(Contact).get(contact_id)
     return contact
 
 

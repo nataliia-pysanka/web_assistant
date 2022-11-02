@@ -10,14 +10,14 @@
                 <b>
                     <a class='name' href="{{ url_for('note', note_id=note.id) }}">
                         {{ note.title }}
-                    </a>
+                    </a><br>
                 </b>
 
                 {% if note.tags %}
                     {% for tag in note.tags %}
-                        <a class='tag' href="{{ url_for('notes/?tag=', tag=tag.id) }}">
-                        {{ tag }}
-                    </a>
+                        <span class='tag'>#</span><a class='tag' href="{{ url_for('note_search', tag=tag.name) }}">
+                            {{ tag }}
+                        </a>
                     {% endfor %}
                 {% endif %}
 
@@ -26,21 +26,21 @@
     </div>
 
     <div class="pagination">
-    {% if contacts.has_prev %}
+    {% if notes.has_prev %}
         <span>
-            <a class='page-number' href="{{ url_for('contacts', page=contacts.prev_num) }}">
+            <a class='page-number' href="{{ url_for('notes', page=notes.prev_num) }}">
                 {{ '<<<' }}
             </a>
         </span>
     {% endif %}
 
-    {% if contacts.pages>1 %}
-    {% for page in contacts.iter_pages() %}
+    {% if notes.pages>1 %}
+    {% for page in notes.iter_pages() %}
         {% if page %}
-            {% if contacts.page != page %}
+            {% if notes.page != page %}
                 <span>
                         <a class='page-number'
-                            href="{{ url_for('contacts', page=page) }}">
+                            href="{{ url_for('notes', page=page) }}">
                         {{ page }}
                         </a>
                 </span>
@@ -53,10 +53,10 @@
     {% endfor %}
     {% endif %}
 
-    {% if contacts.has_next %}
+    {% if notes.has_next %}
         <span>
             <a class='page-number'
-                href="{{ url_for('contacts', page=contacts.next_num) }}">
+                href="{{ url_for('notes', page=notes.next_num) }}">
                 {{ '>>>' }}
             </a>
         </span>

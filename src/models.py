@@ -11,6 +11,8 @@ class User(db.Model):
     token_cookie = db.Column(db.String(255), nullable=True, default=None)
     contacts = relationship('Contact', back_populates='user',
                             cascade="all, delete")
+    notes = relationship('Note', back_populates='user',
+                         cascade="all, delete")
 
     def __repr__(self):
         return f'User({self.username}, {self.email})'
@@ -103,11 +105,27 @@ note_tag = db.Table('note_tag',
 class Note(db.Model):
     __tablename__ = 'note_table'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'),
+                        nullable=False)
+    user = relationship('User', back_populates='notes')
+    title = db.Column(db.String(120), nullable=False)
     text = db.Column(db.String(1200), nullable=False)
+    tags = relationship('Tag', secondary=note_tag, backref='notes')
+
+    def __repr__(self):
+        return f"Note({self.title})"
+
+    def __str__(self):
+        return f"{self.title}"
 
 
 class Tag(db.Model):
     __tablename__ = 'tag_table'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
+
+    def __repr__(self):
+        return f"Tag({self.name})"
+
+    def __str__(self):
+        return f"{self.name}"
