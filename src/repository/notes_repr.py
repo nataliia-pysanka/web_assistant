@@ -1,12 +1,10 @@
 from sqlalchemy.orm import joinedload
 from src import db
-from src.models import Contact, Note
+from src.models import Note, Tag
 from typing import List
-from src.repository.contacts_repr import get_contact_by_id
 
 
-def get_notes(user_id: int,
-              page: int = 1) -> List[Note]:
+def get_notes(user_id: int, page: int = 1) -> List[Note]:
     """Return all notes by user name without loading joined information"""
 
     notes = db.session.query(Note).filter(user_id == user_id). \
@@ -14,11 +12,20 @@ def get_notes(user_id: int,
     return notes
 
 
-def get_note_by_id(contact_id: int) -> Note:
+def get_note_by_id(note_id: int) -> Note:
     """Return note by id with loading joined information"""
-    note = db.session.query(Contact).filter(Contact.id == contact_id). \
-        options(joinedload('tags')).one()
+    note = db.session.query(Note).get(note_id)
+
     return note
+
+
+def get_notes_by_tag(user_id: int, tag_name: List[str], page: int = 1) -> List[Note]:
+    """Return notes by tag with loading joined information"""
+    notes = db.session.query(Note). \
+        join(Tag, Note.tags). \
+        filter(user_id == user_id, Tag.name.in_(tag_name)). \
+        paginate(page=page, per_page=16)
+    return notes
 
 
 def get_tags() -> List[Tag]:
@@ -33,32 +40,30 @@ def get_tag_by_name(tag_name: str):
     return tag
 
 
-def create_joined_tags(contact_id: int, **kwargs):
+def create_joined_tags(note_id: int, **kwargs):
     """Creates new Association object in current session
         which join to inputted contact """
     for tag in kwargs['tags']:
-        contact = get_contact_by_id(contact_id)
-        contact.groups.append(tag)
+        note = get_note_by_id(note_id)
+        note.tags.append(tag)
         db.session.commit()
 
 
 def create_note(**kwargs) -> Note:
     """Creates new Note object and joined objects"""
-    contact = Contact(
+    note = Note(
         user_id=kwargs['user_id'],
-        first_name=kwargs['first_name'],
-        last_name=kwargs['last_name'],
-        adress=kwargs['adress'],
-        birth=kwargs['birth'])
+        title=kwargs['title'],
+        text=kwargs['text'])
 
-    db.session.add(contact)
+    db.session.add(note)
     db.session.commit()
 
     if kwargs.get('tags'):
-        create_joined_tags(contact.id, **kwargs)
+        create_joined_tags(note.id, **kwargs)
 
-    db.session.refresh(contact)
-    return contact
+    db.session.refresh(note)
+    return note
 
 
 def add_tag(name: str) -> Tag:

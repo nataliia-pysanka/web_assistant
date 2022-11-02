@@ -9,7 +9,7 @@ import uuid
 
 from src import models
 from src.db import db
-from src.repository import users_repr, contacts_repr
+from src.repository import users_repr, contacts_repr, notes_repr
 from datetime import datetime, timedelta
 
 
@@ -149,7 +149,7 @@ def notes():
 
     return render_template('pages/notes.html',
                            auth=auth,
-                           contacts=notes_list)
+                           notes=notes_list)
 
 
 @app.route('/note/<int:note_id>', strict_slashes=False)
@@ -158,7 +158,25 @@ def note(note_id):
     if not auth:
         return redirect(url_for('index'))
 
-    note_info = notes_repr.get_note_by_id(contact_id=note_id)
+    note_info = notes_repr.get_note_by_id(note_id=note_id)
 
-    return render_template('pages/contact.html',
-                           auth=auth, contact=note_info)
+    return render_template('pages/note.html',
+                           auth=auth, note=note_info)
+
+
+@app.route('/note/search', strict_slashes=False)
+def note_search():
+    auth = True if 'user' in session else False
+    if not auth:
+        return redirect(url_for('index'))
+
+    user_id = session.get('user', {}).get('id')
+    page = request.args.get('page', 1, type=int)
+    tag_name = request.args.get('tag').split(',')
+
+    note_info = notes_repr.get_notes_by_tag(user_id=user_id,
+                                            tag_name=tag_name,
+                                            page=page)
+
+    return render_template('pages/notes.html',
+                           auth=auth, notes=note_info)
