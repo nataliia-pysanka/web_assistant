@@ -1,39 +1,87 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="modal__background">
-    <div class="modal__window">
+{% if notes %}
+    <div class="content">
+        {% for note in notes %}
+            <div class="contact">
+                <b>
+                    <a class='name' href="{{ url_for('note', note_id=note.id) }}">
+                        {{ note.title }}
+                    </a>
+                </b>
 
-        <form class="auth-form" name="form-auth" method="post">
+                {% if note.tags %}
+                    {% for tag in note.tags %}
+                        <a class='tag' href="{{ url_for('notes/?tag=', tag=tag.id) }}">
+                        {{ tag }}
+                    </a>
+                    {% endfor %}
+                {% endif %}
 
-            <label class="auth-form__label">
-                <span class="auth-form__placeholder">email</span>
-                <input class="auth-form__input input-email" type="email" name="email" autocomplete="off" required>
-            </label>
-
-            <label class="auth-form__label">
-                <span class="auth-form__placeholder">password</span>
-                <input class="auth-form__input input-password" type="password" name="password" autocomlete="off" required>
-                <div class="auth-form__toggler">
-                    <i class="la la-eye auth-form__icon"></i>
-                    <input type="checkbox" class="auth-form__checkbox password-toggler">
-                </div>
-            </label>
-
-            <div class="auth-form__answer"></div>
-
-            <input class="auth-form__submit" type="submit" value="Login">
-
-            <div class="auth-form__bottom">
-                <span>Have no account?</span>
-                <a href="#">Create new</a>
             </div>
-        </form>
-
+        {% endfor %}
     </div>
-</div>
 
-<div class="hint"></div>
+    <div class="pagination">
+    {% if contacts.has_prev %}
+        <span>
+            <a class='page-number' href="{{ url_for('contacts', page=contacts.prev_num) }}">
+                {{ '<<<' }}
+            </a>
+        </span>
+    {% endif %}
+
+    {% if contacts.pages>1 %}
+    {% for page in contacts.iter_pages() %}
+        {% if page %}
+            {% if contacts.page != page %}
+                <span>
+                        <a class='page-number'
+                            href="{{ url_for('contacts', page=page) }}">
+                        {{ page }}
+                        </a>
+                </span>
+            {% else %}
+                <span class='current-page-number'>{{ page }}</span>
+            {% endif %}
+        {% else %}
+            <span class='page-number'>…</span>
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    {% if contacts.has_next %}
+        <span>
+            <a class='page-number'
+                href="{{ url_for('contacts', page=contacts.next_num) }}">
+                {{ '>>>' }}
+            </a>
+        </span>
+    {% endif %}
+    </div>
+{% endif %}
+
+{#        <form class="auth-form" name="form-auth" method="post">#}
+
+
+{##}
+{#            <label class="auth-form__label">#}
+{#                <span class="auth-form__placeholder">password</span>#}
+{#                <input class="auth-form__input input-password" type="password" name="password" autocomlete="off" required>#}
+{#                <div class="auth-form__toggler">#}
+{#                    <i class="la la-eye auth-form__icon"></i>#}
+{#                    <input type="checkbox" class="auth-form__checkbox password-toggler">#}
+{#                </div>#}
+{#            </label>#}
+
+
+{#        </form>#}
+
+
+</div>
 {% endblock %}
 
 

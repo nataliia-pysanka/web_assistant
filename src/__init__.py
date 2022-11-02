@@ -131,10 +131,7 @@ def contact(contact_id):
         return redirect(url_for('index'))
 
     contact_info = contacts_repr.get_contact_by_id(contact_id=contact_id)
-    for gr in contact_info.groups:
-        print(gr)
-    print(contact_info.emails)
-    print(contact_info.phones)
+
     return render_template('pages/contact.html',
                            auth=auth, contact=contact_info)
 
@@ -144,4 +141,24 @@ def notes():
     auth = True if 'user' in session else False
     if not auth:
         return redirect(url_for('index'))
-    return render_template('pages/notes.html', auth=auth)
+
+    user_id = session.get('user', {}).get('id')
+    page = request.args.get('page', 1, type=int)
+
+    notes_list = notes_repr.get_notes(user_id=user_id, page=page)
+
+    return render_template('pages/notes.html',
+                           auth=auth,
+                           contacts=notes_list)
+
+
+@app.route('/note/<int:note_id>', strict_slashes=False)
+def note(note_id):
+    auth = True if 'user' in session else False
+    if not auth:
+        return redirect(url_for('index'))
+
+    note_info = notes_repr.get_note_by_id(contact_id=note_id)
+
+    return render_template('pages/contact.html',
+                           auth=auth, contact=note_info)
