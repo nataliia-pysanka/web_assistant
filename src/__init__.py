@@ -180,3 +180,54 @@ def note_search():
 
     return render_template('pages/notes.html',
                            auth=auth, notes=note_info)
+
+
+@app.route('/contacts/add', methods=['GET', 'POST'], strict_slashes=False)
+def contact_add():
+    auth = True if 'user' in session else False
+    if not auth:
+        return redirect(url_for('index'))
+
+    groups = contacts_repr.get_groups()
+
+    if request.method == 'POST':
+        user_id = session.get('user', {}).get('id')
+        contact_data = {'user_id': user_id,
+                        'first_name': request.form.get('first-name'),
+                        'last_name': request.form.get('last-name')}
+
+        if request.form.get('adress'):
+            contact_data.update({'adress': request.form.get('adress')})
+
+        phones = []
+        for num in range(4):
+            if request.form.get('phone_' + str(num)):
+                phones.append(request.form.get('phone_' + str(num)))
+        if phones:
+            contact_data.update({'phones': phones})
+
+        emails = []
+        for num in range(4):
+            if request.form.get('email_' + str(num)):
+                emails.append(request.form.get('email_' + str(num)))
+        if emails:
+            contact_data.update({'emails': emails})
+
+        groups = []
+        if request.form.get('group') != 'None':
+            gr_name = request.form.get('group')
+            groups.append(contacts_repr.get_group_by_name(gr_name))
+
+        if groups:
+            contact_data.update({'groups': groups})
+
+        if request.form.get('birthday'):
+            request.form.get('birthday')
+            contact_data.update({'birth': request.form.get('birthday')})
+
+        contact_new = contacts_repr.create_contact(**contact_data)
+        if contact_new:
+            return redirect(url_for(f'contact', contact_id=contact_new.id))
+
+    return render_template('pages/contact_add.html',
+                           auth=auth, groups=groups)

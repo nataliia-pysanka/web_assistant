@@ -30,26 +30,26 @@ def get_group_by_name(group_name: str):
     return group
 
 
-def create_joined_phones(contact: Contact, **kwargs):
+def create_joined_phones(contact: Contact, phones):
     """Creates new Phone object in current session
     which join to inputted contact """
-    for phone in kwargs['phones']:
+    for phone in phones:
         contact.phones.append(Phone(phone=phone))
         db.session.commit()
 
 
-def create_joined_emails(contact: Contact, **kwargs):
+def create_joined_emails(contact: Contact, emails):
     """Creates new Email object in current session
         which join to inputted contact """
-    for email in kwargs['emails']:
+    for email in emails:
         contact.emails.append(Email(email=email))
         db.session.commit()
 
 
-def create_joined_groups(contact_id: int, **kwargs):
+def create_joined_groups(contact_id: int, groups):
     """Creates new Association object in current session
         which join to inputted contact """
-    for group in kwargs['groups']:
+    for group in groups:
         contact = get_contact_by_id(contact_id)
         contact.groups.append(group)
         db.session.commit()
@@ -57,22 +57,22 @@ def create_joined_groups(contact_id: int, **kwargs):
 
 def create_contact(**kwargs) -> Contact:
     """Creates new Contact object and joined objects"""
-    contact = Contact(
-        user_id=kwargs['user_id'],
-        first_name=kwargs['first_name'],
-        last_name=kwargs['last_name'],
-        adress=kwargs['adress'],
-        birth=kwargs['birth'])
+    data = {}
+    for key, item in kwargs.items():
+        if key not in ['phones', 'emails', 'groups']:
+            data.update({key: item})
+
+    contact = Contact(**data)
 
     db.session.add(contact)
     db.session.commit()
 
     if kwargs.get('phones'):
-        create_joined_phones(contact, **kwargs)
+        create_joined_phones(contact, kwargs['phones'])
     if kwargs.get('emails'):
-        create_joined_emails(contact, **kwargs)
+        create_joined_emails(contact, kwargs['emails'])
     if kwargs.get('groups'):
-        create_joined_groups(contact.id, **kwargs)
+        create_joined_groups(contact.id, kwargs['groups'])
 
     db.session.refresh(contact)
     return contact
