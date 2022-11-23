@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="modal__background">
+    <div class="modal__window">
+
+        <form class="add-form" name="form-contact-auth" method="post">
+            <div class="modal__container" id="modal">
+                <div style="display: block flex;">
+                    <label class="add-form__label">
+                        <span class="add-form__placeholder">First name</span>
+                        <input class="add-form__input" type="text" id="first-name" name="first-name" autocomplete="off" required>
+                    </label>
+
+                    <label class="add-form__label">
+                        <span class="add-form__placeholder">Last name</span>
+                        <input class="add-form__input" type="text" id="last-name" name="last-name" autocomplete="off" required>
+                    </label>
+
+                    <label class="add-form__label">
+                        <span class="add-form__placeholder">Adress</span>
+                        <input class="add-form__input" type="text" id="adress" name="adress" autocomplete="off">
+                    </label>
+
+                </div>
+                <div style="display: block flex;">
+                    {% for num in range(1, 4) %}
+                        <label class="add-form__label">
+                            <span class="add-form__placeholder">Phone {{ num }}</span>
+                            <input class="add-form__input" type="tel" id="phone_{{ num - 1 }}" name="phone_{{ num - 1 }}" autocomplete="off">
+                        </label>
+                    {% endfor %}
+
+                    <label class="add-form__label">
+                        <span class="add-form__placeholder">Birthday</span>
+                        <input class="add-form__input" type="date" name="birthday" id="birthday" min="1900-01-01" autocomplete="off">
+                    </label>
+                </div>
+
+                <div style="display: block flex;">
+                    {% for num in range(1, 4) %}
+                        <label class="add-form__label">
+                            <span class="add-form__placeholder">Email {{ num }}</span>
+                            <input class="add-form__input" type="email" id="email_{{ num - 1 }}" name="email_{{ num - 1 }}" autocomplete="off">
+                        </label>
+                    {% endfor %}
+
+                    <label class="add-form__label">
+                        <span class="add-form__placeholder">Group</span>
+{#                        <input class="add-form__input" type="text" name="group" autocomplete="off" required>#}
+                        <select class="add-form__input" id="group" name="group">
+                            <option value="None"></option>
+                            {%  for group in groups %}
+                            <option value={{ group }}>{{ group }}</option>
+                            {% endfor %}
+                        </select>
+                          <input class="add-form__submit" id="plus_btn" type="submit" value="+">
+                    </label>
+                </div>
+
+
+            </div>
+            <input class="add-form__submit" type="submit" value="Add">
+
+        </form>
+
+    </div>
+</div>
+
+<div class="hint"></div>
+{% endblock %}
+
+
+
+

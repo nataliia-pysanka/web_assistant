@@ -1,7 +1,7 @@
 window.onload = function() {
     (function() {
         const inputText = document.querySelectorAll('.auth-form__input');
-
+        console.log(inputText)
         inputText.forEach( function(input) {
             input.addEventListener('focus', function() {
                 this.classList.add('focus');
